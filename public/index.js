@@ -23131,7 +23131,7 @@
 		var _sort$sortBy = sort.sortBy;
 		var sortBy = _sort$sortBy === undefined ? 'col4' : _sort$sortBy;
 		var _sort$sortDir = sort.sortDir;
-		var sortDir = _sort$sortDir === undefined ? 'desc' : _sort$sortDir;
+		var sortDir = _sort$sortDir === undefined ? 'ask' : _sort$sortDir;
 
 
 		var sortCol = data.reduce(function (o, _ref) {
@@ -23212,7 +23212,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var identity = function identity(x) {
-		return console.log(x);
+		return x;
 	};
 
 	var Table = function (_Component) {
@@ -23224,7 +23224,7 @@
 			var _this = _possibleConstructorReturn(this, (Table.__proto__ || Object.getPrototypeOf(Table)).call(this, props));
 
 			_this.addRowHandler = _this.addRowHandler.bind(_this);
-
+			_this.setSortHandler = _this.setSortHandler.bind(_this);
 			return _this;
 		}
 
@@ -23238,6 +23238,15 @@
 				addRowHandler();
 			}
 		}, {
+			key: 'setSortHandler',
+			value: function setSortHandler(sortBy, sortDir) {
+				var _props$setSortHandler = this.props.setSortHandler;
+				var setSortHandler = _props$setSortHandler === undefined ? identity : _props$setSortHandler;
+
+
+				setSortHandler({ sortBy: sortBy, sortDir: sortDir });
+			}
+		}, {
 			key: 'renderTitle',
 			value: function renderTitle(title) {
 				return title ? _react2.default.createElement(
@@ -23249,6 +23258,8 @@
 		}, {
 			key: 'renderCell',
 			value: function renderCell() {
+				var _this2 = this;
+
 				var value = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
 				var key = arguments[1];
 
@@ -23258,12 +23269,22 @@
 
 				var className = ['cell'].concat(classList).join(' ');
 
+				var first = classList[0];
+				var second = classList[1];
+
+
+				var clickHandler = first === 'header-cell' ? function () {
+					var dir = second === 'ask' ? 'desc' : 'ask';
+
+					return _this2.setSortHandler(value, dir);
+				} : identity;
+
 				return _react2.default.createElement(
 					'div',
 					{ key: key, className: 'row' },
 					_react2.default.createElement(
 						'div',
-						{ className: className },
+						{ className: className, onClick: clickHandler },
 						value
 					)
 				);
@@ -23271,7 +23292,7 @@
 		}, {
 			key: 'renderCells',
 			value: function renderCells() {
-				var _this2 = this;
+				var _this3 = this;
 
 				var data = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 				var keyPref = arguments[1];
@@ -23279,13 +23300,13 @@
 				return data.map(function (x, i) {
 					var key = keyPref + '-cell-' + i;
 
-					return _this2.renderCell(x, key);
+					return _this3.renderCell(x, key);
 				});
 			}
 		}, {
 			key: 'renderColumns',
 			value: function renderColumns(data) {
-				var _this3 = this;
+				var _this4 = this;
 
 				return data.map(function () {
 					var column = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -23301,8 +23322,8 @@
 					return _react2.default.createElement(
 						'div',
 						{ key: key, className: 'col' },
-						_this3.renderCell(name, key + '-header', 'header-cell', sort),
-						_this3.renderCells(data, key)
+						_this4.renderCell(name, key + '-header', 'header-cell', sort),
+						_this4.renderCells(data, key)
 					);
 				});
 			}

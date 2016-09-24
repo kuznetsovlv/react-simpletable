@@ -1,6 +1,6 @@
 import React, {PropTypes, Component} from 'react';
 
-const identity = x => console.log(x);
+const identity = x => x;
 
 export default class Table extends Component {
 
@@ -8,13 +8,19 @@ export default class Table extends Component {
 		super (props);
 
 		this.addRowHandler = this.addRowHandler.bind(this);
-
+		this.setSortHandler = this.setSortHandler.bind(this);
 	}
 
 	addRowHandler () {
 		const {props: {addRowHandler = identity}} = this;
 
 		addRowHandler();
+	}
+
+	setSortHandler (sortBy, sortDir) {
+		const {props: {setSortHandler = identity}} = this;
+
+		setSortHandler({sortBy, sortDir});
 	}
 
 	renderTitle (title) {
@@ -29,9 +35,17 @@ export default class Table extends Component {
 	renderCell (value = '', key, ...classList) {
 		const className = ['cell'].concat(classList).join(' ');
 
+		const [first, second] = classList;
+
+		const clickHandler = first === 'header-cell' ? () => {
+			const dir = second === 'ask' ? 'desc' : 'ask';
+
+			return this.setSortHandler(value, dir);
+		} : identity;
+
 		return (
 			<div key={key}  className="row">
-				<div className={className}>{value}</div>
+				<div className={className} onClick={clickHandler}>{value}</div>
 			</div>
 		);
 	}

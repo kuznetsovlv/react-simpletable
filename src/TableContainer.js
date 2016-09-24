@@ -25,7 +25,7 @@ function mapStateToProps (state) {
 
 	const {updateTable = {}} = state;
 	const {data = createTableData(12, 'col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7'), sort = {}, exchange, rowAdd} = updateTable;
-	const {sortBy = 'col4', sortDir = 'desc'} = sort;
+	const {sortBy = 'col4', sortDir = 'ask'} = sort;
 
 	const sortCol = data.reduce((o, {name, data}) => (name === sortBy ? data : o), null);
 
