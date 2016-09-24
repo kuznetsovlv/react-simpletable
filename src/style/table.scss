@@ -1,0 +1,54 @@
+.simple-table {
+	@include table;
+	border: 1px solid black;
+
+	.title {
+		display: table-caption;
+		@include title;
+		text-align: center;
+	}
+
+	.cell {
+		display: table-cell;
+		@include base-text;
+		@include ellipsis;
+		text-align: right;
+		padding: 0 22px;
+
+		border: 1px solid black;
+
+		&.header-cell {
+			@include header-text;
+			cursor: pointer;
+
+			&.ask {
+				@include sort('ask');
+			}
+
+			&.desc {
+				@include sort('desc');
+			}
+		}
+	}
+
+	.row {
+		display: table-row;
+	}
+
+	.col {
+		display: table-cell;
+
+		&>div {
+			@include table;
+			width: 100%
+		}
+	}
+}
+
+.row-add {
+	@include table-position;
+	@include base-text;
+	@include ellipsis;
+	text-align: center;
+	cursor: pointer;
+}

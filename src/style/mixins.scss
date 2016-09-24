@@ -1,0 +1,44 @@
+@mixin base-text {
+	font: $base-weight $base-font-size $base-font-family;
+	line-height: $base-height;
+	height: $base-height;
+}
+
+@mixin title {
+	@include base-text;
+
+	font-size: $title-font-size;
+	font-weight: $title-weight;
+	height: $title-height;
+	line-height: $title-height;
+}
+
+@mixin header-text {
+	@include base-text;
+
+	font-weight: $header-weight;
+}
+
+@mixin table-position {
+	width: $table-width;
+	margin: auto;
+}
+
+@mixin table {
+	@include table-position;
+	display: table;
+	table-layout: auto;
+	border-spacing: 0;
+	border-collapse: collapse;
+	empty-cells: show;
+}
+
+@mixin ellipsis {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+@mixin sort($value) {
+	background: url('img/' + $value + '.png') no-repeat right;
+}
