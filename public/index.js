@@ -60,7 +60,7 @@
 
 	var _reducer2 = _interopRequireDefault(_reducer);
 
-	var _App = __webpack_require__(196);
+	var _App = __webpack_require__(197);
 
 	var _App2 = _interopRequireDefault(_App);
 
@@ -23034,7 +23034,8 @@
 	}
 
 /***/ },
-/* 196 */
+/* 196 */,
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23047,7 +23048,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _TableContainer = __webpack_require__(197);
+	var _TableContainer = __webpack_require__(198);
 
 	var _TableContainer2 = _interopRequireDefault(_TableContainer);
 
@@ -23060,7 +23061,7 @@
 	exports.default = App;
 
 /***/ },
-/* 197 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23081,11 +23082,11 @@
 
 	var _redux = __webpack_require__(179);
 
-	var _Table = __webpack_require__(198);
+	var _Table = __webpack_require__(199);
 
 	var _Table2 = _interopRequireDefault(_Table);
 
-	var _dataLib = __webpack_require__(200);
+	var _dataLib = __webpack_require__(201);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23170,7 +23171,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(TableContainer);
 
 /***/ },
-/* 198 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23179,7 +23180,7 @@
 	  value: true
 	});
 
-	var _Table = __webpack_require__(199);
+	var _Table = __webpack_require__(200);
 
 	var _Table2 = _interopRequireDefault(_Table);
 
@@ -23188,7 +23189,7 @@
 	exports.default = _Table2.default;
 
 /***/ },
-/* 199 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23364,7 +23365,7 @@
 	exports.default = Table;
 
 /***/ },
-/* 200 */
+/* 201 */
 /***/ function(module, exports) {
 
 	'use strict';
