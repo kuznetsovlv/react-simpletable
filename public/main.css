@@ -33,7 +33,8 @@ html, body, #app {
     white-space: nowrap;
     text-overflow: ellipsis;
     text-align: right;
-    padding: 0 22px;
+    padding: 2px;
+    padding-right: 22px;
     border: 1px solid black; }
     .simple-table .cell.header-cell {
       font: 400 16px arial sans-serif;
@@ -45,6 +46,30 @@ html, body, #app {
         background: url("img/ask.png") no-repeat right; }
       .simple-table .cell.header-cell.desc {
         background: url("img/desc.png") no-repeat right; }
+      .simple-table .cell.header-cell:after {
+        content: '';
+        display: block;
+        visibility: hidden;
+        clear: both; }
+      .simple-table .cell.header-cell:not(:hover) .mover {
+        display: none; }
+      .simple-table .cell.header-cell .sorterer {
+        text-align: right; }
+      .simple-table .cell.header-cell .mover {
+        float: left;
+        width: 38px;
+        height: 18px;
+        border: 1px solid black;
+        border-radius: 2px; }
+        .simple-table .cell.header-cell .mover > div {
+          display: inline-block;
+          width: 50%;
+          font: 400 16px arial sans-serif;
+          line-height: 20px;
+          height: 20px;
+          height: 18px;
+          line-height: 18px;
+          text-align: center; }
   .simple-table .row {
     display: table-row; }
   .simple-table .col {
@@ -70,5 +95,9 @@ html, body, #app {
   text-overflow: ellipsis;
   text-align: center;
   cursor: pointer; }
+
+@media screen and (max-width: 800px) {
+  .simple-table .row .col .row .cell.header-cell .mover {
+    display: block; } }
 
 /*# sourceMappingURL=main.css.map */

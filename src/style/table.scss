@@ -13,7 +13,8 @@
 		@include base-text;
 		@include ellipsis;
 		text-align: right;
-		padding: 0 22px;
+		padding: $cell-common-padding;
+		padding-right: $cell-right-padding;
 
 		border: 1px solid black;
 
@@ -27,6 +28,41 @@
 
 			&.desc {
 				@include sort('desc');
+			}
+
+			&:after {
+				content: '';
+				display: block;
+				visibility: hidden;
+				clear: both;
+			}
+
+			&:not(:hover) {
+				.mover {
+					display: none;
+				}
+			}
+
+			.sorterer {
+				text-align: right;
+			}
+
+			.mover {
+				float: left;
+				width: 2 * $base-height - 2px;
+				height: $base-height - 2px;
+
+				border: 1px solid black;
+				border-radius: 2px;
+
+				& > div {
+					display: inline-block;
+					width: 50%;
+					@include base-text;
+					height: $base-height - 2px;
+					line-height: $base-height - 2px;
+					text-align: center;
+				}
 			}
 		}
 	}
@@ -51,4 +87,22 @@
 	@include ellipsis;
 	text-align: center;
 	cursor: pointer;
+}
+
+@media screen and (max-width: 800px) {
+	.simple-table {
+		.row {
+			.col {
+				.row {
+					.cell {
+						&.header-cell {
+							.mover {
+								display: block;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

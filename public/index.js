@@ -23017,24 +23017,65 @@
 
 /***/ },
 /* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.default = updateTable;
+
+	var _actionTypes = __webpack_require__(196);
+
+	var actionType = _interopRequireWildcard(_actionTypes);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	function updateTable() {
+		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+		var _ref = arguments[1];
+		var type = _ref.type;
+		var _ref$payload = _ref.payload;
+		var payload = _ref$payload === undefined ? {} : _ref$payload;
+		var sort = state.sort;
+		var exchange = state.exchange;
+		var rowAdd = state.rowAdd;
+
+		var clearedState = _objectWithoutProperties(state, ['sort', 'exchange', 'rowAdd']);
+
+		var _payload$data = payload.data;
+		var data = _payload$data === undefined ? [] : _payload$data;
+
+
+		switch (type) {
+			case actionType.RESORTING:
+				return _extends({}, clearedState, { data: data, sort: payload.sort });
+			case actionType.ROW_ADD:
+				return _extends({}, clearedState, { data: data, rowAdd: true });
+		}
+
+		return clearedState;
+	}
+
+/***/ },
+/* 196 */
 /***/ function(module, exports) {
 
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	  value: true
 	});
-	exports.default = updateTable;
-	function updateTable() {
-		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-		var action = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-
-		return state;
-	}
+	var RESORTING = exports.RESORTING = "RESORTING";
+	var ROW_ADD = exports.ROW_ADD = "ROW_ADD";
 
 /***/ },
-/* 196 */,
 /* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -23088,6 +23129,12 @@
 
 	var _dataLib = __webpack_require__(201);
 
+	var _actions = __webpack_require__(202);
+
+	var actions = _interopRequireWildcard(_actions);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23096,13 +23143,21 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var defaultData = (0, _dataLib.createTableData)(12, 'col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7');
+
 	var TableContainer = function (_Component) {
 		_inherits(TableContainer, _Component);
 
 		function TableContainer(props) {
 			_classCallCheck(this, TableContainer);
 
-			return _possibleConstructorReturn(this, (TableContainer.__proto__ || Object.getPrototypeOf(TableContainer)).call(this, props));
+			var _this = _possibleConstructorReturn(this, (TableContainer.__proto__ || Object.getPrototypeOf(TableContainer)).call(this, props));
+
+			var dispatch = props.dispatch;
+
+
+			_this.actions = (0, _redux.bindActionCreators)(actions, dispatch);
+			return _this;
 		}
 
 		_createClass(TableContainer, [{
@@ -23111,37 +23166,35 @@
 				var props = this.props;
 
 
-				return _react2.default.createElement(_Table2.default, _extends({}, props, { title: 'Simple Table' }));
+				return _react2.default.createElement(_Table2.default, _extends({}, props, {
+					title: 'Simple Table',
+					setSortHandler: this.actions.resort,
+					addRowHandler: this.actions.addRow
+				}));
 			}
 		}]);
 
 		return TableContainer;
 	}(_react.Component);
 
-	function mapStateToProps(state) {
-		console.log(state);
-
-		var _state$updateTable = state.updateTable;
-		var updateTable = _state$updateTable === undefined ? {} : _state$updateTable;
-		var _updateTable$data = updateTable.data;
-		var data = _updateTable$data === undefined ? (0, _dataLib.createTableData)(12, 'col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7') : _updateTable$data;
-		var _updateTable$sort = updateTable.sort;
-		var sort = _updateTable$sort === undefined ? {} : _updateTable$sort;
-		var exchange = updateTable.exchange;
-		var rowAdd = updateTable.rowAdd;
-		var _sort$sortBy = sort.sortBy;
-		var sortBy = _sort$sortBy === undefined ? 'col4' : _sort$sortBy;
+	function mapStateToProps(_ref) {
+		var _ref$data = _ref.data;
+		var data = _ref$data === undefined ? defaultData : _ref$data;
+		var _ref$sort = _ref.sort;
+		var sort = _ref$sort === undefined ? {} : _ref$sort;
+		var exchange = _ref.exchange;
+		var rowAdd = _ref.rowAdd;
+		var sortBy = sort.sortBy;
 		var _sort$sortDir = sort.sortDir;
 		var sortDir = _sort$sortDir === undefined ? 'ask' : _sort$sortDir;
 
-
-		var sortCol = data.reduce(function (o, _ref) {
-			var name = _ref.name;
-			var data = _ref.data;
+		var sortCol = data.reduce(function (o, _ref2) {
+			var name = _ref2.name;
+			var data = _ref2.data;
 			return name === sortBy ? data : o;
 		}, null);
 
-		data.forEach(function () {
+		var resortedData = data.map(function () {
 			var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 			d.sort = d.name === sortBy ? sortDir : null;
@@ -23157,15 +23210,17 @@
 						return { x: x, i: i };
 					}).sort(function (a, b) {
 						return k * (sortCol[a.i] - sortCol[b.i]);
-					}).map(function (_ref2) {
-						var x = _ref2.x;
+					}).map(function (_ref3) {
+						var x = _ref3.x;
 						return x;
 					});
 				})();
 			}
+
+			return d;
 		});
 
-		return { data: rowAdd ? (0, _dataLib.addRow)(data) : data };
+		return { data: rowAdd ? (0, _dataLib.addRow)(resortedData) : resortedData };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(TableContainer);
@@ -23232,20 +23287,26 @@
 		_createClass(Table, [{
 			key: 'addRowHandler',
 			value: function addRowHandler() {
-				var _props$addRowHandler = this.props.addRowHandler;
+				var _props = this.props;
+				var _props$addRowHandler = _props.addRowHandler;
 				var addRowHandler = _props$addRowHandler === undefined ? identity : _props$addRowHandler;
+				var _props$data = _props.data;
+				var data = _props$data === undefined ? [] : _props$data;
 
 
-				addRowHandler();
+				addRowHandler(data);
 			}
 		}, {
 			key: 'setSortHandler',
 			value: function setSortHandler(sortBy, sortDir) {
-				var _props$setSortHandler = this.props.setSortHandler;
-				var setSortHandler = _props$setSortHandler === undefined ? identity : _props$setSortHandler;
+				var _props2 = this.props;
+				var _props2$setSortHandle = _props2.setSortHandler;
+				var setSortHandler = _props2$setSortHandle === undefined ? identity : _props2$setSortHandle;
+				var _props2$data = _props2.data;
+				var data = _props2$data === undefined ? [] : _props2$data;
 
 
-				setSortHandler({ sortBy: sortBy, sortDir: sortDir });
+				setSortHandler({ sortBy: sortBy, sortDir: sortDir }, data);
 			}
 		}, {
 			key: 'renderTitle',
@@ -23257,57 +23318,72 @@
 				) : null;
 			}
 		}, {
-			key: 'renderCell',
-			value: function renderCell() {
+			key: 'renderHeaderCell',
+			value: function renderHeaderCell() {
+				var value = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+
 				var _this2 = this;
 
-				var value = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
 				var key = arguments[1];
+				var sort = arguments[2];
 
-				for (var _len = arguments.length, classList = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-					classList[_key - 2] = arguments[_key];
-				}
-
-				var className = ['cell'].concat(classList).join(' ');
-
-				var first = classList[0];
-				var second = classList[1];
-
-
-				var clickHandler = first === 'header-cell' ? function () {
-					var dir = second === 'ask' ? 'desc' : 'ask';
+				var className = sort ? 'cell header-cell ' + sort : 'cell header-cell';
+				var clickHandler = function clickHandler() {
+					var dir = sort === 'ask' ? 'desc' : 'ask';
 
 					return _this2.setSortHandler(value, dir);
-				} : identity;
+				};
 
 				return _react2.default.createElement(
 					'div',
 					{ key: key, className: 'row' },
 					_react2.default.createElement(
 						'div',
-						{ className: className, onClick: clickHandler },
-						value
+						{ className: className },
+						_react2.default.createElement(
+							'div',
+							{ className: 'mover' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'left' },
+								"\<"
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'right' },
+								"\>"
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'sorterer', onClick: clickHandler },
+							value
+						)
 					)
 				);
 			}
 		}, {
 			key: 'renderCells',
 			value: function renderCells() {
-				var _this3 = this;
-
 				var data = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 				var keyPref = arguments[1];
 
-				return data.map(function (x, i) {
-					var key = keyPref + '-cell-' + i;
-
-					return _this3.renderCell(x, key);
+				return data.map(function (v, i) {
+					return _react2.default.createElement(
+						'div',
+						{ key: keyPref + '-cell-' + i, className: 'row' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'cell' },
+							v
+						)
+					);
 				});
 			}
 		}, {
 			key: 'renderColumns',
 			value: function renderColumns(data) {
-				var _this4 = this;
+				var _this3 = this;
 
 				return data.map(function () {
 					var column = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -23323,18 +23399,18 @@
 					return _react2.default.createElement(
 						'div',
 						{ key: key, className: 'col' },
-						_this4.renderCell(name, key + '-header', 'header-cell', sort),
-						_this4.renderCells(data, key)
+						_this3.renderHeaderCell(name, key + '-header', sort),
+						_this3.renderCells(data, key)
 					);
 				});
 			}
 		}, {
 			key: 'render',
 			value: function render() {
-				var _props = this.props;
-				var title = _props.title;
-				var _props$data = _props.data;
-				var data = _props$data === undefined ? [] : _props$data;
+				var _props3 = this.props;
+				var title = _props3.title;
+				var _props3$data = _props3.data;
+				var data = _props3$data === undefined ? [] : _props3$data;
 
 
 				return _react2.default.createElement(
@@ -23413,6 +23489,43 @@
 			return _extends({}, d, { data: data });
 		});
 	};
+
+/***/ },
+/* 202 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.resort = resort;
+	exports.addRow = addRow;
+
+	var _actionTypes = __webpack_require__(196);
+
+	var actionType = _interopRequireWildcard(_actionTypes);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function resort() {
+		var sort = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+		var data = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+
+		return {
+			type: actionType.RESORTING,
+			payload: { sort: sort, data: data }
+		};
+	}
+
+	function addRow() {
+		var data = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+
+		return {
+			type: actionType.ROW_ADD,
+			payload: { data: data }
+		};
+	}
 
 /***/ }
 /******/ ]);

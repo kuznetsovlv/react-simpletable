@@ -12,15 +12,15 @@ export default class Table extends Component {
 	}
 
 	addRowHandler () {
-		const {props: {addRowHandler = identity}} = this;
+		const {props: {addRowHandler = identity, data = []}} = this;
 
-		addRowHandler();
+		addRowHandler(data);
 	}
 
 	setSortHandler (sortBy, sortDir) {
-		const {props: {setSortHandler = identity}} = this;
+		const {props: {setSortHandler = identity, data = []}} = this;
 
-		setSortHandler({sortBy, sortDir});
+		setSortHandler({sortBy, sortDir}, data);
 	}
 
 	renderTitle (title) {
@@ -32,30 +32,34 @@ export default class Table extends Component {
 				) : null;
 	}
 
-	renderCell (value = '', key, ...classList) {
-		const className = ['cell'].concat(classList).join(' ');
-
-		const [first, second] = classList;
-
-		const clickHandler = first === 'header-cell' ? () => {
-			const dir = second === 'ask' ? 'desc' : 'ask';
+	renderHeaderCell (value = '', key, sort) {
+		const className = sort ? `cell header-cell ${sort}` : 'cell header-cell';
+		const clickHandler = () => {
+			const dir = sort === 'ask' ? 'desc' : 'ask';
 
 			return this.setSortHandler(value, dir);
-		} : identity;
+		};
 
 		return (
 			<div key={key}  className="row">
-				<div className={className} onClick={clickHandler}>{value}</div>
+				<div className={className}>
+					<div className="mover">
+						<div className="left">{"\<"}</div>
+						<div className="right">{"\>"}</div>
+					</div>
+					<div className="sorterer" onClick={clickHandler}>{value}</div>
+				</div>
 			</div>
 		);
 	}
 
 	renderCells (data = [], keyPref) {
-		return data.map((x, i) => {
-			const key = `${keyPref}-cell-${i}`;
-
-			return this.renderCell(x, key);
-		});
+		return data.map((v, i) => (
+				<div key={`${keyPref}-cell-${i}`}  className="row">
+					<div className="cell">{v}</div>
+				</div>
+			)
+		);
 	}
 
 	renderColumns (data) {
@@ -65,7 +69,7 @@ export default class Table extends Component {
 
 			return (
 				<div key={key} className="col">
-					{this.renderCell(name, `${key}-header`, 'header-cell', sort)}
+					{this.renderHeaderCell(name, `${key}-header`, sort)}
 					{this.renderCells(data, key)}
 				</div>
 			);
