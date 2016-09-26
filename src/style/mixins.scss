@@ -1,7 +1,9 @@
 @mixin base-text {
 	font: $base-weight $base-font-size $base-font-family;
+	color: $base-text-color;
 	line-height: $base-height;
 	height: $base-height;
+	background: $base-text-background;
 }
 
 @mixin title {
@@ -15,8 +17,14 @@
 
 @mixin header-text {
 	@include base-text;
+	background: $header-background;
+	color: $header-text-color;
 
 	font-weight: $header-weight;
+	
+	&:hover {
+		background: $header-hover-bacground;
+	}
 }
 
 @mixin table-position {
@@ -41,4 +49,5 @@
 
 @mixin sort($value) {
 	background: url('img/' + $value + '.png') no-repeat right;
+	background-size: $icon-size;
 }

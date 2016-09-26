@@ -1,6 +1,6 @@
 .simple-table {
 	@include table;
-	border: 1px solid black;
+	// border: 1px solid black;
 
 	.title {
 		display: table-caption;
@@ -14,13 +14,16 @@
 		@include ellipsis;
 		text-align: right;
 		padding: $cell-common-padding;
-		padding-right: 0;
+		padding-right: $cell-right-padding;
 
-		border: 1px solid black;
+		border: $border;
 
 		&.header-cell {
 			@include header-text;
 			cursor: pointer;
+			padding-right: 0;
+			border-color: $border-header-color;
+
 
 			&.ask {
 				.sorterer {
@@ -54,19 +57,29 @@
 
 			.mover {
 				float: left;
-				width: 2 * $base-height - 2px;
-				height: $base-height - 2px;
+				width: $mover-width;
+				height: $mover-height;
 
-				border: 1px solid black;
-				border-radius: 2px;
+				border: $border-mover;
+				border-radius: $mover-border-radius;
 
 				& > div {
 					display: inline-block;
 					width: 50%;
 					@include base-text;
-					height: $base-height - 2px;
-					line-height: $base-height - 2px;
+					height: $mover-height;
+					line-height: $mover-height;
 					text-align: center;
+					
+					&.left {
+						border-top-left-radius: $mover-border-radius;
+						border-bottom-left-radius: $mover-border-radius;
+					}
+
+					&.right {
+						border-top-right-radius: $mover-border-radius;
+						border-bottom-right-radius: $mover-border-radius;
+					}
 				}
 			}
 		}
@@ -92,6 +105,14 @@
 	@include ellipsis;
 	text-align: center;
 	cursor: pointer;
+
+	border: $border;
+
+	&:hover {
+		border-color: $add-row-hover-border-color;
+		background: $add-row-hover-background;
+		color: $add-row-hover-color;
+	}
 }
 
 @media screen and (max-width: 800px) {
