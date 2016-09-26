@@ -23043,15 +23043,23 @@
 
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+	/**
+	 * Method to sort column.
+	 * @param {Object} state - current state.
+	 * @param {Object} sort - object with sorting data.
+	 * @return {Object} - new state.
+	 */
 	function sortData() {
 		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 		var sort = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 		var _state$data = state.data;
-		var data = _state$data === undefined ? [] : _state$data;
+		var data = _state$data === undefined ? [] : _state$data; //Current table's data.
+
 		var sortBy = sort.sortBy;
 		var _sort$sortDir = sort.sortDir;
-		var sortDir = _sort$sortDir === undefined ? 'ask' : _sort$sortDir;
+		var sortDir = _sort$sortDir === undefined ? 'ask' : _sort$sortDir; //Sorting data.
 
+		//First select columnt data sort by.
 
 		var sortCol = data.reduce(function (o, _ref) {
 			var name = _ref.name;
@@ -23059,17 +23067,21 @@
 			return name === sortBy ? data : o;
 		}, null);
 
+		// Sort data.
 		var resortedData = data.map(function () {
 			var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-			d.sort = d.name === sortBy ? sortDir : null;
+			d.sort = d.name === sortBy ? sortDir : null; //If this column is sort for, set sort direction for component view.
 
+			//If sorting column exist, sort data
 			if (sortCol) {
 				(function () {
-					var k = sortDir === 'ask' ? 1 : -1;
+					var k = sortDir === 'ask' ? 1 : -1; //Sorting coeficient
 
-					var data = d.data;
+					var _d$data = d.data;
+					var data = _d$data === undefined ? [] : _d$data; //Current column's data.
 
+					//Convert data into array with indexes, sort and conver to columnt data array back.
 
 					d.data = data.map(function (x, i) {
 						return { x: x, i: i };
@@ -23082,17 +23094,25 @@
 				})();
 			}
 
+			//Return new data
 			return d;
 		});
 
+		//Return state with new data
 		return _extends({}, state, { data: resortedData });
 	}
 
+	/**
+	 * Method to add row.
+	 * @param {Object} state - current state.
+	 * @return {Object} - new state.
+	 */
 	function addNewRow() {
 		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 		var _state$data2 = state.data;
-		var data = _state$data2 === undefined ? [] : _state$data2;
+		var data = _state$data2 === undefined ? [] : _state$data2; //Current table's data.
 
+		//First clear data from sorting information for correct view.
 
 		var clearedData = data.map(function () {
 			var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -23103,15 +23123,23 @@
 			return rest;
 		});
 
+		//Return new state with new data.
 		return _extends({}, state, { data: (0, _dataLib.addRow)(clearedData) });
 	}
 
+	/**
+	 * Method to find moving column's destination index.
+	 * @param {Number} index - current index.
+	 * @param {String} dir - moving direction.
+	 * @param {Number} last - index of the last column.
+	 */
 	function getDest() {
 		var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 		var dir = arguments[1];
 		var last = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
 
 
+		//Columns can move by loop.
 		switch (dir) {
 			case constants.COLUMN_MOVE_LEFT:
 				return index > 0 ? --index : Math.max(0, last);
@@ -23122,38 +23150,51 @@
 		return index;
 	}
 
+	/**
+	 * Method to move column.
+	 * @param {Object} state - current state.
+	 * @param {Object} payload - object with moving column's name and it's moving direction.
+	 * @return {Object} - new state.
+	 */
 	function moveColumn() {
 		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 		var payload = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 		var _state$data3 = state.data;
-		var data = _state$data3 === undefined ? [] : _state$data3;
-		var col = payload.col;
-		var dir = payload.dir;
+		var data = _state$data3 === undefined ? [] : _state$data3; //Current table's data.
 
+		var col = payload.col;
+		var dir = payload.dir; //Moving column's name and it's moving direction.
+
+		//First get moving column
 
 		var column = data.reduce(function (o, c) {
 			return c.name === col ? c : o;
 		}, null);
-		var index = data.indexOf(column);
+		var index = data.indexOf(column); //Next find it's index;
 
-		var dest = getDest(index, dir, data.length - 1);
+		var dest = getDest(index, dir, data.length - 1); //Get destination index.
 
-		var destColumn = data[dest];
+		var destColumn = data[dest]; //Get column at this destination index
 
+		//Generate new reordered data
 		var reorderedData = data.map(function (d, i) {
+			//Columns got above must exchange positions
 			switch (i) {
 				case index:
 					return destColumn;
 				case dest:
 					return column;
 			}
-
+			// Othe columns do not move or change position.
 			return d;
 		});
-
+		//Return new state with new data.
 		return _extends({}, state, { data: reorderedData });
 	}
 
+	/**
+	 * Main reducer.
+	 */
 	function updateTable() {
 		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 		var _ref3 = arguments[1];
@@ -23163,14 +23204,15 @@
 
 
 		switch (type) {
+			//Create initial data.
 			case actionType.INIT:
 				return _extends({}, state, { data: (0, _dataLib.createTableData)(12, 'col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7') });
 			case actionType.RESORTING:
-				return sortData(state, payload.sort);
+				return sortData(state, payload.sort); //Sort table
 			case actionType.ROW_ADD:
-				return addNewRow(state);
+				return addNewRow(state); //Add row.
 			case actionType.COLUMN_MOVE:
-				return moveColumn(state, payload);
+				return moveColumn(state, payload); //Move column
 		}
 
 		return state;
@@ -23197,47 +23239,66 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	  value: true
 	});
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+	/*Methods to create table and row data*/
+
 	var LIM = 100000;
 
+	/**
+	 * Create column method.
+	 * @param {String} name - column's name.
+	 * @param {Number} length - cell quantity
+	 * @return {Object} - column data.
+	 */
 	function createColumn() {
-		var name = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-		var length = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+	  var name = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+	  var length = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
-		var data = [];
+	  var data = [];
 
-		for (var i = 0; i < length; ++i) {
-			data.push(Math.random() * LIM >> 0);
-		}return { name: name, data: data };
+	  for (var i = 0; i < length; ++i) {
+	    data.push(Math.random() * LIM >> 0);
+	  }return { name: name, data: data };
 	}
 
+	/**
+	 * Table create method.
+	 * @param {Number} rowNum - quantity of rows.
+	 * @param {String} ... - names of the columns
+	 * @return {Array} - array of table's data.
+	 */
 	var createTableData = exports.createTableData = function createTableData() {
-		for (var _len = arguments.length, colNames = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-			colNames[_key - 1] = arguments[_key];
-		}
+	  for (var _len = arguments.length, colNames = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	    colNames[_key - 1] = arguments[_key];
+	  }
 
-		var rowNum = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-		return colNames.map(function (name) {
-			return createColumn(name, rowNum);
-		});
+	  var rowNum = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	  return colNames.map(function (name) {
+	    return createColumn(name, rowNum);
+	  });
 	};
 
+	/**
+	 * Method to add row into the table.
+	 * @params {Array} data - array of table's data.
+	 * @return {Array} - array of table's data.
+	 */
 	var addRow = exports.addRow = function addRow() {
-		var data = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-		return data.map(function () {
-			var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-			var _d$data = d.data;
-			var data = _d$data === undefined ? [] : _d$data;
+	  var data = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+	  return data.map(function () {
+	    var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	    var _d$data = d.data;
+	    var data = _d$data === undefined ? [] : _d$data;
 
 
-			data.push(Math.random() * LIM >> 0);
+	    data.push(Math.random() * LIM >> 0);
 
-			return _extends({}, d, { data: data });
-		});
+	    return _extends({}, d, { data: data });
+	  });
 	};
 
 /***/ },
@@ -23333,6 +23394,11 @@
 			return _this;
 		}
 
+		/**
+	  * Intializes table data at mounting element.
+	  */
+
+
 		_createClass(TableContainer, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
@@ -23414,9 +23480,21 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	/**
+	 * Default method for handlers.
+	 * @param {*} x - any value.
+	 * @return {*} - first argument
+	 */
 	var identity = function identity(x) {
 		return x;
 	};
+
+	/**
+	 * Table created class
+	 * @param {Object} props - component's props.
+	 * @param {String} [props#title] - table's title.
+	 * @param {Array} [props#data] - array of column's data
+	 */
 
 	var Table = function (_Component) {
 		_inherits(Table, _Component);
@@ -23432,6 +23510,11 @@
 			return _this;
 		}
 
+		/**
+	  * Method to handle "Add row" click event.
+	  */
+
+
 		_createClass(Table, [{
 			key: 'addRowHandler',
 			value: function addRowHandler() {
@@ -23441,6 +23524,11 @@
 
 				addRowHandler();
 			}
+
+			/**
+	   * Method to handle change sort type event.
+	   */
+
 		}, {
 			key: 'setSortHandler',
 			value: function setSortHandler(sortBy, sortDir) {
@@ -23450,6 +23538,11 @@
 
 				setSortHandler({ sortBy: sortBy, sortDir: sortDir });
 			}
+
+			/**
+	   * Method to handle clumn move event.
+	   */
+
 		}, {
 			key: 'columnMoveHandler',
 			value: function columnMoveHandler(col, dir) {
@@ -23459,6 +23552,13 @@
 
 				columnMoveHandler(col, dir);
 			}
+
+			/**
+	   * Method to render titte.
+	   * @param {String} title - table's title
+	   * @return {Element | null} - title react component
+	   */
+
 		}, {
 			key: 'renderTitle',
 			value: function renderTitle(title) {
@@ -23468,6 +23568,15 @@
 					title
 				) : null;
 			}
+
+			/**
+	   * Method to render header's cell.
+	   * @param {String} value - column's title.
+	   * @param {String} key - component's key, we do not need it here but use to uniformity.
+	   * @param {String} [sort] - argument to show if table sorted by this column and in what direction.
+	   * @return {Element} - column header react element.
+	   */
+
 		}, {
 			key: 'renderHeaderCell',
 			value: function renderHeaderCell() {
@@ -23479,6 +23588,11 @@
 				var sort = arguments[2];
 
 				var className = sort ? 'cell header-cell ' + sort : 'cell header-cell';
+
+				/**
+	    * Click handler for setting sort direction.
+	    * @return {Function} - set sort direction handler
+	    */
 				var clickHandler = function clickHandler() {
 					var dir = sort === 'ask' ? 'desc' : 'ask';
 
@@ -23517,6 +23631,14 @@
 					)
 				);
 			}
+
+			/**
+	   * Method to render common cell.
+	   * @param {Array} data - array of column data
+	   * @param {String} keyPref - key preffix to elements created from array.
+	   * @return {Element} - column react element.
+	   */
+
 		}, {
 			key: 'renderCells',
 			value: function renderCells() {
@@ -23535,10 +23657,19 @@
 					);
 				});
 			}
+
+			/**
+	   * Method for rendering columns.
+	   * @param {Array} data - array of data to create table.
+	   * @return {Element} - react element with table columns.
+	   */
+
 		}, {
 			key: 'renderColumns',
-			value: function renderColumns(data) {
+			value: function renderColumns() {
 				var _this3 = this;
+
+				var data = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 
 				return data.map(function () {
 					var column = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -23593,6 +23724,14 @@
 		return Table;
 	}(_react.Component);
 
+	Table.PropTypes = {
+		title: _react.PropTypes.string,
+		data: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+			name: _react.PropTypes.string,
+			data: _react.PropTypes.arrayOf(_react.PropTypes.number),
+			sort: _react.PropTypes.oneOf(['ask', 'desc'])
+		}))
+	};
 	exports.default = Table;
 
 /***/ },
@@ -23615,12 +23754,20 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+	/**
+	 * Action method to initialize.
+	 * @return {Object} - initialize action.
+	 */
 	function init() {
 		return {
 			type: actionType.INIT
 		};
 	}
 
+	/**
+	 * Action method to sort table.
+	 * @return {Object} - sorting action.
+	 */
 	function resort() {
 		var sort = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
@@ -23630,12 +23777,20 @@
 		};
 	}
 
+	/**
+	 * Action method to add row into table.
+	 * @return {Object} - adding action.
+	 */
 	function addRow() {
 		return {
 			type: actionType.ROW_ADD
 		};
 	}
 
+	/**
+	 * Action method to move column.
+	 * @return {Object} - moving action.
+	 */
 	function moveColumn(col, dir) {
 		return {
 			type: actionType.COLUMN_MOVE,

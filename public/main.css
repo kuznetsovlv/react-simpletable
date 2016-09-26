@@ -125,7 +125,7 @@ html, body, #app {
     background: #2a74d2;
     color: #fff; }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1300px) {
   .simple-table .row .col .row .cell.header-cell .mover {
     display: block; } }
 

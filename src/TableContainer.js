@@ -14,6 +14,9 @@ class TableContainer extends Component {
 		this.actions = bindActionCreators(actions, dispatch);
 	}
 
+	/**
+	 * Intializes table data at mounting element.
+	 */
 	componentDidMount() {
 		this.actions.init()      ;
 	}
