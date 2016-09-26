@@ -27,6 +27,7 @@ class TableContainer extends Component {
 				title="Simple Table"
 				setSortHandler={this.actions.resort}
 				addRowHandler={this.actions.addRow}
+				columnMoveHandler={this.actions.moveColumn}
 			/>
 		);
 	}

@@ -1,0 +1,2 @@
+export const COLUMN_MOVE_LEFT = "COLUMN_MOVE_LEFT";
+export const COLUMN_MOVE_RIGHT = "COLUMN_MOVE_RIGHT";

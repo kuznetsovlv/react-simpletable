@@ -60,7 +60,7 @@
 
 	var _reducer2 = _interopRequireDefault(_reducer);
 
-	var _App = __webpack_require__(197);
+	var _App = __webpack_require__(199);
 
 	var _App2 = _interopRequireDefault(_App);
 
@@ -23033,7 +23033,11 @@
 
 	var actionType = _interopRequireWildcard(_actionTypes);
 
-	var _dataLib = __webpack_require__(201);
+	var _dataLib = __webpack_require__(197);
+
+	var _constants = __webpack_require__(198);
+
+	var constants = _interopRequireWildcard(_constants);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -23102,6 +23106,54 @@
 		return _extends({}, state, { data: (0, _dataLib.addRow)(clearedData) });
 	}
 
+	function getDest() {
+		var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+		var dir = arguments[1];
+		var last = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+
+
+		switch (dir) {
+			case constants.COLUMN_MOVE_LEFT:
+				return index > 0 ? --index : Math.max(0, last);
+			case constants.COLUMN_MOVE_RIGHT:
+				return index < last ? ++index : 0;
+		}
+
+		return index;
+	}
+
+	function moveColumn() {
+		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+		var payload = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+		var _state$data3 = state.data;
+		var data = _state$data3 === undefined ? [] : _state$data3;
+		var col = payload.col;
+		var dir = payload.dir;
+
+
+		var column = data.reduce(function (o, c) {
+			return c.name === col ? c : o;
+		}, null);
+		var index = data.indexOf(column);
+
+		var dest = getDest(index, dir, data.length - 1);
+
+		var destColumn = data[dest];
+
+		var reorderedData = data.map(function (d, i) {
+			switch (i) {
+				case index:
+					return destColumn;
+				case dest:
+					return column;
+			}
+
+			return d;
+		});
+
+		return _extends({}, state, { data: reorderedData });
+	}
+
 	function updateTable() {
 		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 		var _ref3 = arguments[1];
@@ -23117,6 +23169,8 @@
 				return sortData(state, payload.sort);
 			case actionType.ROW_ADD:
 				return addNewRow(state);
+			case actionType.COLUMN_MOVE:
+				return moveColumn(state, payload);
 		}
 
 		return state;
@@ -23134,9 +23188,72 @@
 	var INIT = exports.INIT = "INIT";
 	var RESORTING = exports.RESORTING = "RESORTING";
 	var ROW_ADD = exports.ROW_ADD = "ROW_ADD";
+	var COLUMN_MOVE = exports.COLUMN_MOVE = "COLUMN_MOVE";
 
 /***/ },
 /* 197 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var LIM = 100000;
+
+	function createColumn() {
+		var name = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+		var length = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+		var data = [];
+
+		for (var i = 0; i < length; ++i) {
+			data.push(Math.random() * LIM >> 0);
+		}return { name: name, data: data };
+	}
+
+	var createTableData = exports.createTableData = function createTableData() {
+		for (var _len = arguments.length, colNames = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+			colNames[_key - 1] = arguments[_key];
+		}
+
+		var rowNum = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+		return colNames.map(function (name) {
+			return createColumn(name, rowNum);
+		});
+	};
+
+	var addRow = exports.addRow = function addRow() {
+		var data = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+		return data.map(function () {
+			var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+			var _d$data = d.data;
+			var data = _d$data === undefined ? [] : _d$data;
+
+
+			data.push(Math.random() * LIM >> 0);
+
+			return _extends({}, d, { data: data });
+		});
+	};
+
+/***/ },
+/* 198 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var COLUMN_MOVE_LEFT = exports.COLUMN_MOVE_LEFT = "COLUMN_MOVE_LEFT";
+	var COLUMN_MOVE_RIGHT = exports.COLUMN_MOVE_RIGHT = "COLUMN_MOVE_RIGHT";
+
+/***/ },
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23149,7 +23266,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _TableContainer = __webpack_require__(198);
+	var _TableContainer = __webpack_require__(200);
 
 	var _TableContainer2 = _interopRequireDefault(_TableContainer);
 
@@ -23162,7 +23279,7 @@
 	exports.default = App;
 
 /***/ },
-/* 198 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23183,11 +23300,11 @@
 
 	var _redux = __webpack_require__(179);
 
-	var _Table = __webpack_require__(199);
+	var _Table = __webpack_require__(201);
 
 	var _Table2 = _interopRequireDefault(_Table);
 
-	var _actions = __webpack_require__(202);
+	var _actions = __webpack_require__(203);
 
 	var actions = _interopRequireWildcard(_actions);
 
@@ -23230,7 +23347,8 @@
 				return _react2.default.createElement(_Table2.default, _extends({}, props, {
 					title: 'Simple Table',
 					setSortHandler: this.actions.resort,
-					addRowHandler: this.actions.addRow
+					addRowHandler: this.actions.addRow,
+					columnMoveHandler: this.actions.moveColumn
 				}));
 			}
 		}]);
@@ -23266,7 +23384,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(TableContainer);
 
 /***/ },
-/* 199 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23275,7 +23393,7 @@
 	  value: true
 	});
 
-	var _Table = __webpack_require__(200);
+	var _Table = __webpack_require__(202);
 
 	var _Table2 = _interopRequireDefault(_Table);
 
@@ -23284,7 +23402,7 @@
 	exports.default = _Table2.default;
 
 /***/ },
-/* 200 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23298,6 +23416,12 @@
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
+
+	var _constants = __webpack_require__(198);
+
+	var constants = _interopRequireWildcard(_constants);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23321,6 +23445,7 @@
 
 			_this.addRowHandler = _this.addRowHandler.bind(_this);
 			_this.setSortHandler = _this.setSortHandler.bind(_this);
+			_this.columnMoveHandler = _this.columnMoveHandler.bind(_this);
 			return _this;
 		}
 
@@ -23341,6 +23466,15 @@
 
 
 				setSortHandler({ sortBy: sortBy, sortDir: sortDir });
+			}
+		}, {
+			key: 'columnMoveHandler',
+			value: function columnMoveHandler(col, dir) {
+				var _props$columnMoveHand = this.props.columnMoveHandler;
+				var columnMoveHandler = _props$columnMoveHand === undefined ? identity : _props$columnMoveHand;
+
+
+				columnMoveHandler(col, dir);
 			}
 		}, {
 			key: 'renderTitle',
@@ -23379,12 +23513,16 @@
 							{ className: 'mover' },
 							_react2.default.createElement(
 								'div',
-								{ className: 'left' },
+								{ className: 'left', onClick: function onClick() {
+										return _this2.columnMoveHandler(value, constants.COLUMN_MOVE_LEFT);
+									} },
 								"\<"
 							),
 							_react2.default.createElement(
 								'div',
-								{ className: 'right' },
+								{ className: 'right', onClick: function onClick() {
+										return _this2.columnMoveHandler(value, constants.COLUMN_MOVE_RIGHT);
+									} },
 								"\>"
 							)
 						),
@@ -23475,57 +23613,7 @@
 	exports.default = Table;
 
 /***/ },
-/* 201 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var LIM = 100000;
-
-	function createColumn() {
-		var name = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-		var length = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-
-		var data = [];
-
-		for (var i = 0; i < length; ++i) {
-			data.push(Math.random() * LIM >> 0);
-		}return { name: name, data: data };
-	}
-
-	var createTableData = exports.createTableData = function createTableData() {
-		for (var _len = arguments.length, colNames = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-			colNames[_key - 1] = arguments[_key];
-		}
-
-		var rowNum = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-		return colNames.map(function (name) {
-			return createColumn(name, rowNum);
-		});
-	};
-
-	var addRow = exports.addRow = function addRow() {
-		var data = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-		return data.map(function () {
-			var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-			var _d$data = d.data;
-			var data = _d$data === undefined ? [] : _d$data;
-
-
-			data.push(Math.random() * LIM >> 0);
-
-			return _extends({}, d, { data: data });
-		});
-	};
-
-/***/ },
-/* 202 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23536,6 +23624,7 @@
 	exports.init = init;
 	exports.resort = resort;
 	exports.addRow = addRow;
+	exports.moveColumn = moveColumn;
 
 	var _actionTypes = __webpack_require__(196);
 
@@ -23561,6 +23650,13 @@
 	function addRow() {
 		return {
 			type: actionType.ROW_ADD
+		};
+	}
+
+	function moveColumn(col, dir) {
+		return {
+			type: actionType.COLUMN_MOVE,
+			payload: { col: col, dir: dir }
 		};
 	}
 

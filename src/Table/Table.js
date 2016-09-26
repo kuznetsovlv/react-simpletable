@@ -1,4 +1,5 @@
-import React, {PropTypes, Component} from 'react';
+import React, {PropTypes, Component}	from 'react';
+import * as constants					from '../constants';
 
 const identity = x => x;
 
@@ -9,6 +10,7 @@ export default class Table extends Component {
 
 		this.addRowHandler = this.addRowHandler.bind(this);
 		this.setSortHandler = this.setSortHandler.bind(this);
+		this.columnMoveHandler = this.columnMoveHandler.bind(this);
 	}
 
 	addRowHandler () {
@@ -21,6 +23,12 @@ export default class Table extends Component {
 		const {props: {setSortHandler = identity}} = this;
 
 		setSortHandler({sortBy, sortDir});
+	}
+
+	columnMoveHandler (col, dir) {
+		const {props: {columnMoveHandler = identity}} = this;
+
+		columnMoveHandler(col, dir);
 	}
 
 	renderTitle (title) {
@@ -44,8 +52,8 @@ export default class Table extends Component {
 			<div key={key}  className="row">
 				<div className={className}>
 					<div className="mover">
-						<div className="left">{"\<"}</div>
-						<div className="right">{"\>"}</div>
+						<div className="left" onClick={() => this.columnMoveHandler(value, constants.COLUMN_MOVE_LEFT)}>{"\<"}</div>
+						<div className="right" onClick={() => this.columnMoveHandler(value, constants.COLUMN_MOVE_RIGHT)}>{"\>"}</div>
 					</div>
 					<div className="sorterer" onClick={clickHandler}>{value}</div>
 				</div>

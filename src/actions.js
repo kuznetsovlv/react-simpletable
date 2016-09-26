@@ -18,3 +18,10 @@ export function addRow () {
 		type: actionType.ROW_ADD
 	}
 }
+
+export function moveColumn (col, dir) {
+	return {
+		type: actionType.COLUMN_MOVE,
+		payload: {col, dir}
+	}
+}
