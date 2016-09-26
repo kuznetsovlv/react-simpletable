@@ -23361,23 +23361,6 @@
 		var data = _ref$data === undefined ? [] : _ref$data;
 
 
-		// const resortedData = data.map((d = {}) => {
-		// 	d.sort = d.name === sortBy ? sortDir : null;
-
-		// 	if (sortCol) {
-		// 		const k = sortDir === 'ask' ? 1 : -1;
-
-		// 		const {data} = d;
-
-		// 		d.data = data.map((x, i) => {return {x, i}}).sort((a, b) => k * (sortCol[a.i] - sortCol[b.i])).map(({x}) => x);
-		// 	}
-
-		// 	return d;
-		// });
-
-
-		// return {data: rowAdd ? : resortedData};
-
 		return { data: data };
 	}
 
