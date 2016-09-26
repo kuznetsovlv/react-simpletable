@@ -23033,34 +23033,93 @@
 
 	var actionType = _interopRequireWildcard(_actionTypes);
 
+	var _dataLib = __webpack_require__(201);
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+	function sortData() {
+		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+		var sort = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+		var _state$data = state.data;
+		var data = _state$data === undefined ? [] : _state$data;
+		var sortBy = sort.sortBy;
+		var _sort$sortDir = sort.sortDir;
+		var sortDir = _sort$sortDir === undefined ? 'ask' : _sort$sortDir;
+
+
+		var sortCol = data.reduce(function (o, _ref) {
+			var name = _ref.name;
+			var data = _ref.data;
+			return name === sortBy ? data : o;
+		}, null);
+
+		var resortedData = data.map(function () {
+			var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+			d.sort = d.name === sortBy ? sortDir : null;
+
+			if (sortCol) {
+				(function () {
+					var k = sortDir === 'ask' ? 1 : -1;
+
+					var data = d.data;
+
+
+					d.data = data.map(function (x, i) {
+						return { x: x, i: i };
+					}).sort(function (a, b) {
+						return k * (sortCol[a.i] - sortCol[b.i]);
+					}).map(function (_ref2) {
+						var x = _ref2.x;
+						return x;
+					});
+				})();
+			}
+
+			return d;
+		});
+
+		return _extends({}, state, { data: resortedData });
+	}
+
+	function addNewRow() {
+		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+		var _state$data2 = state.data;
+		var data = _state$data2 === undefined ? [] : _state$data2;
+
+
+		var clearedData = data.map(function () {
+			var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+			var sort = d.sort;
+
+			var rest = _objectWithoutProperties(d, ['sort']);
+
+			return rest;
+		});
+
+		return _extends({}, state, { data: (0, _dataLib.addRow)(clearedData) });
+	}
+
 	function updateTable() {
 		var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-		var _ref = arguments[1];
-		var type = _ref.type;
-		var _ref$payload = _ref.payload;
-		var payload = _ref$payload === undefined ? {} : _ref$payload;
-		var sort = state.sort;
-		var exchange = state.exchange;
-		var rowAdd = state.rowAdd;
-
-		var clearedState = _objectWithoutProperties(state, ['sort', 'exchange', 'rowAdd']);
-
-		var _payload$data = payload.data;
-		var data = _payload$data === undefined ? [] : _payload$data;
+		var _ref3 = arguments[1];
+		var type = _ref3.type;
+		var _ref3$payload = _ref3.payload;
+		var payload = _ref3$payload === undefined ? {} : _ref3$payload;
 
 
 		switch (type) {
+			case actionType.INIT:
+				return _extends({}, state, { data: (0, _dataLib.createTableData)(12, 'col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7') });
 			case actionType.RESORTING:
-				return _extends({}, clearedState, { data: data, sort: payload.sort });
+				return sortData(state, payload.sort);
 			case actionType.ROW_ADD:
-				return _extends({}, clearedState, { data: data, rowAdd: true });
+				return addNewRow(state);
 		}
 
-		return clearedState;
+		return state;
 	}
 
 /***/ },
@@ -23072,6 +23131,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	var INIT = exports.INIT = "INIT";
 	var RESORTING = exports.RESORTING = "RESORTING";
 	var ROW_ADD = exports.ROW_ADD = "ROW_ADD";
 
@@ -23127,8 +23187,6 @@
 
 	var _Table2 = _interopRequireDefault(_Table);
 
-	var _dataLib = __webpack_require__(201);
-
 	var _actions = __webpack_require__(202);
 
 	var actions = _interopRequireWildcard(_actions);
@@ -23142,8 +23200,6 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var defaultData = (0, _dataLib.createTableData)(12, 'col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7');
 
 	var TableContainer = function (_Component) {
 		_inherits(TableContainer, _Component);
@@ -23161,6 +23217,11 @@
 		}
 
 		_createClass(TableContainer, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				this.actions.init();
+			}
+		}, {
 			key: 'render',
 			value: function render() {
 				var props = this.props;
@@ -23179,48 +23240,27 @@
 
 	function mapStateToProps(_ref) {
 		var _ref$data = _ref.data;
-		var data = _ref$data === undefined ? defaultData : _ref$data;
-		var _ref$sort = _ref.sort;
-		var sort = _ref$sort === undefined ? {} : _ref$sort;
-		var exchange = _ref.exchange;
-		var rowAdd = _ref.rowAdd;
-		var sortBy = sort.sortBy;
-		var _sort$sortDir = sort.sortDir;
-		var sortDir = _sort$sortDir === undefined ? 'ask' : _sort$sortDir;
-
-		var sortCol = data.reduce(function (o, _ref2) {
-			var name = _ref2.name;
-			var data = _ref2.data;
-			return name === sortBy ? data : o;
-		}, null);
-
-		var resortedData = data.map(function () {
-			var d = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-			d.sort = d.name === sortBy ? sortDir : null;
-
-			if (sortCol) {
-				(function () {
-					var k = sortDir === 'ask' ? 1 : -1;
-
-					var data = d.data;
+		var data = _ref$data === undefined ? [] : _ref$data;
 
 
-					d.data = data.map(function (x, i) {
-						return { x: x, i: i };
-					}).sort(function (a, b) {
-						return k * (sortCol[a.i] - sortCol[b.i]);
-					}).map(function (_ref3) {
-						var x = _ref3.x;
-						return x;
-					});
-				})();
-			}
+		// const resortedData = data.map((d = {}) => {
+		// 	d.sort = d.name === sortBy ? sortDir : null;
 
-			return d;
-		});
+		// 	if (sortCol) {
+		// 		const k = sortDir === 'ask' ? 1 : -1;
 
-		return { data: rowAdd ? (0, _dataLib.addRow)(resortedData) : resortedData };
+		// 		const {data} = d;
+
+		// 		d.data = data.map((x, i) => {return {x, i}}).sort((a, b) => k * (sortCol[a.i] - sortCol[b.i])).map(({x}) => x);
+		// 	}
+
+		// 	return d;
+		// });
+
+
+		// return {data: rowAdd ? : resortedData};
+
+		return { data: data };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(TableContainer);
@@ -23287,26 +23327,20 @@
 		_createClass(Table, [{
 			key: 'addRowHandler',
 			value: function addRowHandler() {
-				var _props = this.props;
-				var _props$addRowHandler = _props.addRowHandler;
+				var _props$addRowHandler = this.props.addRowHandler;
 				var addRowHandler = _props$addRowHandler === undefined ? identity : _props$addRowHandler;
-				var _props$data = _props.data;
-				var data = _props$data === undefined ? [] : _props$data;
 
 
-				addRowHandler(data);
+				addRowHandler();
 			}
 		}, {
 			key: 'setSortHandler',
 			value: function setSortHandler(sortBy, sortDir) {
-				var _props2 = this.props;
-				var _props2$setSortHandle = _props2.setSortHandler;
-				var setSortHandler = _props2$setSortHandle === undefined ? identity : _props2$setSortHandle;
-				var _props2$data = _props2.data;
-				var data = _props2$data === undefined ? [] : _props2$data;
+				var _props$setSortHandler = this.props.setSortHandler;
+				var setSortHandler = _props$setSortHandler === undefined ? identity : _props$setSortHandler;
 
 
-				setSortHandler({ sortBy: sortBy, sortDir: sortDir }, data);
+				setSortHandler({ sortBy: sortBy, sortDir: sortDir });
 			}
 		}, {
 			key: 'renderTitle',
@@ -23407,10 +23441,10 @@
 		}, {
 			key: 'render',
 			value: function render() {
-				var _props3 = this.props;
-				var title = _props3.title;
-				var _props3$data = _props3.data;
-				var data = _props3$data === undefined ? [] : _props3$data;
+				var _props = this.props;
+				var title = _props.title;
+				var _props$data = _props.data;
+				var data = _props$data === undefined ? [] : _props$data;
 
 
 				return _react2.default.createElement(
@@ -23499,6 +23533,7 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+	exports.init = init;
 	exports.resort = resort;
 	exports.addRow = addRow;
 
@@ -23508,22 +23543,24 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+	function init() {
+		return {
+			type: actionType.INIT
+		};
+	}
+
 	function resort() {
 		var sort = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-		var data = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
 
 		return {
 			type: actionType.RESORTING,
-			payload: { sort: sort, data: data }
+			payload: { sort: sort }
 		};
 	}
 
 	function addRow() {
-		var data = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-
 		return {
-			type: actionType.ROW_ADD,
-			payload: { data: data }
+			type: actionType.ROW_ADD
 		};
 	}
 

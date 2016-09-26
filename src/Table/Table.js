@@ -12,15 +12,15 @@ export default class Table extends Component {
 	}
 
 	addRowHandler () {
-		const {props: {addRowHandler = identity, data = []}} = this;
+		const {props: {addRowHandler = identity}} = this;
 
-		addRowHandler(data);
+		addRowHandler();
 	}
 
 	setSortHandler (sortBy, sortDir) {
-		const {props: {setSortHandler = identity, data = []}} = this;
+		const {props: {setSortHandler = identity}} = this;
 
-		setSortHandler({sortBy, sortDir}, data);
+		setSortHandler({sortBy, sortDir});
 	}
 
 	renderTitle (title) {

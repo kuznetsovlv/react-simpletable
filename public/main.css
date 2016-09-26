@@ -34,7 +34,7 @@ html, body, #app {
     text-overflow: ellipsis;
     text-align: right;
     padding: 2px;
-    padding-right: 22px;
+    padding-right: 0;
     border: 1px solid black; }
     .simple-table .cell.header-cell {
       font: 400 16px arial sans-serif;
@@ -42,9 +42,9 @@ html, body, #app {
       height: 20px;
       font-weight: 700;
       cursor: pointer; }
-      .simple-table .cell.header-cell.ask {
+      .simple-table .cell.header-cell.ask .sorterer {
         background: url("img/ask.png") no-repeat right; }
-      .simple-table .cell.header-cell.desc {
+      .simple-table .cell.header-cell.desc .sorterer {
         background: url("img/desc.png") no-repeat right; }
       .simple-table .cell.header-cell:after {
         content: '';
@@ -54,7 +54,8 @@ html, body, #app {
       .simple-table .cell.header-cell:not(:hover) .mover {
         display: none; }
       .simple-table .cell.header-cell .sorterer {
-        text-align: right; }
+        text-align: right;
+        padding-right: 22px; }
       .simple-table .cell.header-cell .mover {
         float: left;
         width: 38px;

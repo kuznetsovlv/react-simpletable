@@ -1,15 +1,20 @@
 import * as actionType	from './actionTypes';
 
-export function resort (sort = {}, data = []) {
+export function init () {
 	return {
-		type: actionType.RESORTING,
-		payload: {sort, data}
+		type: actionType.INIT
 	}
 }
 
-export function addRow (data = []) {
+export function resort (sort = {}) {
 	return {
-		type: actionType.ROW_ADD,
-		payload: {data}
+		type: actionType.RESORTING,
+		payload: {sort}
+	}
+}
+
+export function addRow () {
+	return {
+		type: actionType.ROW_ADD
 	}
 }

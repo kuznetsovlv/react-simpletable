@@ -14,7 +14,7 @@
 		@include ellipsis;
 		text-align: right;
 		padding: $cell-common-padding;
-		padding-right: $cell-right-padding;
+		padding-right: 0;
 
 		border: 1px solid black;
 
@@ -23,11 +23,15 @@
 			cursor: pointer;
 
 			&.ask {
-				@include sort('ask');
+				.sorterer {
+					@include sort('ask');
+				}
 			}
 
 			&.desc {
-				@include sort('desc');
+				.sorterer {
+					@include sort('desc');
+				}
 			}
 
 			&:after {
@@ -45,6 +49,7 @@
 
 			.sorterer {
 				text-align: right;
+				padding-right: $cell-right-padding;
 			}
 
 			.mover {
